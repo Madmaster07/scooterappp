@@ -99,4 +99,24 @@ class UsersController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
+    /**
+     * Login method for Admin
+     */
+    public function login()
+    {
+        $this->request->allowMethod(['get','post']);
+        $result = $this->Authentication->getResult();
+
+        // Si el login es correcto, redirige al dashboard admin
+        if ($result->isValid()) {
+            $target = $this->Authentication->getLoginRedirect() ?? '/admin';
+            return $this->redirect($target);
+        }
+
+        // Si el login falla y se envió el formulario
+        if ($this->request->is('post') && !$result->isValid()) {
+            $this->Flash->error('Usuario o contraseña incorrectos');
+        }
+    }
 }

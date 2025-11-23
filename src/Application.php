@@ -72,21 +72,24 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             'queryParam' => 'redirect',
         ]);
 
+        // Identificador: indica qué campos de la tabla `users` se usan para autenticación
+        $authenticationService->loadIdentifier('Authentication.Password', [
+            'fields' => [
+                'username' => 'username',
+                'password' => 'password',
+            ],
+        ]);
+
+        // Autenticador de sesión
         $authenticationService->loadAuthenticator('Authentication.Session');
+
+        // Autenticador de formulario: conecta el login con el identificador
         $authenticationService->loadAuthenticator('Authentication.Form', [
             'fields' => [
-                'username' => 'warneroc_arandanos',
-                'password' => '3SvyEnd558zFRaWncTaX',
+                'username' => 'username',
+                'password' => 'password',
             ],
             'loginUrl' => Router::url('/users/login'),
-            'identifier' => [
-                'Authentication.Password' => [
-                    'fields' => [
-                        'username' => 'warneroc_arandanos',
-                        'password' => '3SvyEnd558zFRaWncTaX',
-                    ],
-                ],
-            ],
         ]);
 
         return $authenticationService;

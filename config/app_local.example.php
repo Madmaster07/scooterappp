@@ -39,7 +39,7 @@ return [
      */
     'Datasources' => [
         'default' => [
-            'host' => 'localhost',
+            'host' => 'Warnero.com',
             /*
              * CakePHP will use the default DB port based on the driver selected
              * MySQL on MAMP uses port 8889, MAMP users will want to uncomment
@@ -47,8 +47,8 @@ return [
              */
             //'port' => 'non_standard_port_number',
 
-            'username' => 'my_app',
-            'password' => 'secret',
+            'username' => 'warneroc_arandanos',
+            'password' => '3SvyEnd558zFRaWncTaX',
 
             'database' => 'my_app',
             /*
@@ -67,10 +67,10 @@ return [
          * The test connection is used during the test suite.
          */
         'test' => [
-            'host' => 'localhost',
+            'host' => 'Warnero.com',
             //'port' => 'non_standard_port_number',
-            'username' => 'my_app',
-            'password' => 'secret',
+            'username' => 'warneroc_arandanos',
+            'password' => '3SvyEnd558zFRaWncTaX',
             'database' => 'test_myapp',
             //'schema' => 'myapp',
             'url' => env('DATABASE_TEST_URL', 'sqlite://127.0.0.1/tmp/tests.sqlite'),
@@ -86,8 +86,8 @@ return [
      */
     'EmailTransport' => [
         'default' => [
-            'host' => 'localhost',
-            'port' => 25,
+            'host' => 'Warnero.com',
+            'port' => 3306,
             'username' => null,
             'password' => null,
             'client' => null,

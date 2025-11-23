@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Estaciones de Carga – ScooterApp</title>
+
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <style>
+        :root {
+            --bg: #e0f2ff;
+            --card: #ffffff;
+            --card-soft: #f1f5f9;
+            --accent: #2563eb;
+            --accent-soft: rgba(37, 99, 235, 0.08);
+            --accent-strong: #1d4ed8;
+            --text-main: #111827;
+            --text-muted: #4b5563;
+            --border-subtle: #cbd5f5;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top left, #bfdbfe, #ffffff);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .layout-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            background: linear-gradient(135deg, #eff6ff, #ffffff);
+            border-radius: 24px;
+            box-shadow:
+                0 20px 60px rgba(15, 23, 42, 0.15),
+                0 0 0 1px rgba(148, 163, 184, 0.4);
+            padding: 22px 24px 26px;
+            border: 1px solid rgba(148, 163, 184, 0.7);
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .header-main {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 0%, #60a5fa, #2563eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.25);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 20px;
+        }
+
+        .header-text h1 {
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: 0.02em;
+        }
+
+        .header-text p {
+            margin: 4px 0 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            padding: 6px 12px;
+            font-size: 11px;
+            border-radius: 999px;
+            background: rgba(219, 234, 254, 0.95);
+            color: var(--accent-strong);
+            border: 1px solid rgba(37, 99, 235, 0.5);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: #22c55e;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+            gap: 18px;
+        }
+
+        @media (max-width: 900px) {
+            .content {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 18px;
+            padding: 14px 16px 16px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .card h2 {
+            font-size: 15px;
+            margin: 0 0 8px;
+        }
+
+        .card small {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* MAPA */
+        #map {
+            width: 100%;
+            height: 480px;
+            border-radius: 14px;
+            margin-top: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.9);
+            overflow: hidden;
+        }
+
+        /* PANEL DERECHO */
+        .stations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .station-item {
+            padding: 8px 10px;
+            border-radius: 12px;
+            background: var(--card-soft);
+            border: 1px solid rgba(148, 163, 184, 0.9);
+            cursor: pointer;
+        }
+
+        .station-item:hover {
+            border-color: var(--accent-strong);
+            background: #e5efff;
+        }
+
+        .station-item strong {
+            display: block;
+            font-size: 13px;
+        }
+
+        .station-item span {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .coords-box {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 12px;
+            background: var(--card-soft);
+            border: 1px dashed rgba(148, 163, 184, 0.9);
+            font-size: 12px;
+        }
+
+        .coords-box h3 {
+            margin: 0 0 6px;
+            font-size: 13px;
+        }
+
+        .coords-box p {
+            margin: 0;
+            font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 11px;
+        }
+
+        .coords-label {
+            font-weight: 600;
+        }
+
+        .highlight {
+            color: var(--accent-strong);
+        }
+    </style>
+</head>
+
+<body>
+<div class="layout-wrapper">
+    <header class="header">
+        <div class="header-main">
+            <div class="logo">S</div>
+            <div class="header-text">
+                <h1>Estaciones de Carga – Irapuato</h1>
+                <p>Centros de scooters eléctricos para cargar, rentar y monitorear ubicación en tiempo real.</p>
+            </div>
+        </div>
+        <div class="badge">
+            <span class="badge-dot"></span>
+            Mapa Leaflet conectado a estaciones
+        </div>
+    </header>
+
+    <main class="content">
+        <!-- MAPA -->
+        <section class="card">
+            <h2>Mapa de estaciones</h2>
+            <small>Da clic en un marcador o en la lista de la derecha para ver detalles. También puedes hacer clic en el mapa para ver las coordenadas.</small>
+            <div id="map"></div>
+        </section>
+
+        <!-- PANEL DE INFORMACIÓN -->
+        <aside class="card">
+            <h2>Estaciones de carga y renta</h2>
+            <small>Zona urbana de Irapuato, Gto.</small>
+
+            <div class="stations-list" id="stations-list">
+                <!-- Se llena dinámicamente, pero también ponemos contenido de ejemplo -->
+            </div>
+
+            <div class="coords-box" id="coords-station">
+                <h3>Detalles de la estación seleccionada</h3>
+                <p id="coords-station-text">
+                    Selecciona una estación del mapa o de la lista para ver su latitud y longitud.
+                </p>
+            </div>
+
+            <div class="coords-box" id="coords-click">
+                <h3>Último punto clickeado en el mapa</h3>
+                <p id="coords-click-text">
+                    Latitud: —<br>
+                    Longitud: —<br>
+                    Nivel de zoom: —
+                </p>
+            </div>
+        </aside>
+    </main>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    // Estaciones de ejemplo en Irapuato
+    const estaciones = [
+        {
+            id: 1,
+            nombre: 'Centro Histórico Irapuato',
+            tipo: 'Carga y renta',
+            lat: 20.6763,
+            lng: -101.3563,
+            direccion: 'Plaza Principal, Zona Centro',
+            capacidad: 16
+        },
+        {
+            id: 2,
+            nombre: 'Plaza Cibeles',
+            tipo: 'Renta de scooters',
+            lat: 20.6555,
+            lng: -101.4017,
+            direccion: 'Blvd. Paseo Solidaridad 13600',
+            capacidad: 24
+        },
+        {
+            id: 3,
+            nombre: 'Parque Irekua',
+            tipo: 'Punto de carga rápida',
+            lat: 20.6796,
+            lng: -101.3539,
+            direccion: 'Blvd. Díaz Ordaz s/n, Col. Jardines',
+            capacidad: 12
+        },
+        {
+            id: 4,
+            nombre: 'Terminal de Autobuses',
+            tipo: 'Carga y renta',
+            lat: 20.6690,
+            lng: -101.3494,
+            direccion: 'Av. Guerrero 100, Zona Terminal',
+            capacidad: 18
+        },
+        {
+            id: 5,
+            nombre: 'Zona Universitaria',
+            tipo: 'Renta estudiantil',
+            lat: 20.6940,
+            lng: -101.3530,
+            direccion: 'Corredor Universitario Irapuato',
+            capacidad: 20
+        }
+    ];
+
+    // Inicializar mapa centrado en Irapuato
+    const map = L.map('map').setView([20.6763, -101.36], 13);
+
+    // Capa de mapa (OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    const stationDetailsEl = document.getElementById('coords-station-text');
+    const stationListEl = document.getElementById('stations-list');
+    const clickCoordsEl = document.getElementById('coords-click-text');
+
+    // Función para mostrar info de estación
+    function mostrarEstacion(estacion) {
+        stationDetailsEl.innerHTML = `
+            <span class="coords-label">Estación:</span> <span class="highlight">${estacion.nombre}</span><br>
+            <span class="coords-label">Tipo:</span> ${estacion.tipo}<br>
+            <span class="coords-label">Dirección:</span> ${estacion.direccion}<br>
+            <span class="coords-label">Capacidad:</span> ${estacion.capacidad} scooters<br>
+            <span class="coords-label">Latitud:</span> ${estacion.lat.toFixed(5)}<br>
+            <span class="coords-label">Longitud:</span> ${estacion.lng.toFixed(5)}
+        `;
+    }
+
+    // Agregar marcadores al mapa
+    estaciones.forEach(estacion => {
+        const marker = L.marker([estacion.lat, estacion.lng]).addTo(map);
+
+        marker.bindPopup(`
+            <strong>${estacion.nombre}</strong><br/>
+            ${estacion.direccion}<br/>
+            Tipo: ${estacion.tipo}<br/>
+            Capacidad: ${estacion.capacidad} scooters
+        `);
+
+        marker.on('click', () => {
+            mostrarEstacion(estacion);
+        });
+    });
+
+    // Llenar la lista lateral con estaciones
+    estaciones.forEach(estacion => {
+        const item = document.createElement('div');
+        item.className = 'station-item';
+        item.innerHTML = `
+            <strong>${estacion.nombre}</strong>
+            <span>${estacion.direccion}</span>
+            <span>Lat: ${estacion.lat.toFixed(5)} · Lng: ${estacion.lng.toFixed(5)}</span>
+        `;
+
+        item.addEventListener('click', () => {
+            map.setView([estacion.lat, estacion.lng], 15);
+            mostrarEstacion(estacion);
+        });
+
+        stationListEl.appendChild(item);
+    });
+
+    // Mostrar coordenadas de los clics en el mapa (monitoreo lat/long)
+    map.on('click', function (e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+        const zoom = map.getZoom();
+
+        clickCoordsEl.innerHTML = `
+            Latitud: ${lat.toFixed(6)}<br>
+            Longitud: ${lng.toFixed(6)}<br>
+            Nivel de zoom: ${zoom}
+        `;
+    });
+</script>
+</body>
+</html>

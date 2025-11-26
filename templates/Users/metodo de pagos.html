@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Métodos de pago – ScooterApp</title>
+
+    <style>
+        :root {
+            --bg: #e0f2ff;
+            --card: #ffffff;
+            --card-soft: #f1f5f9;
+            --accent: #2563eb;
+            --accent-soft: rgba(37, 99, 235, 0.08);
+            --accent-strong: #1d4ed8;
+            --text-main: #111827;   /* letras casi negras */
+            --text-muted: #4b5563;
+            --border-subtle: #cbd5f5;
+            --danger: #dc2626;
+            --input-bg: #f9fafb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top left, #bfdbfe, #ffffff);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .payment-wrapper {
+            width: 100%;
+            max-width: 1080px;
+            background: linear-gradient(135deg, #eff6ff, #ffffff);
+            border-radius: 24px;
+            box-shadow:
+                0 20px 60px rgba(15, 23, 42, 0.15),
+                0 0 0 1px rgba(148, 163, 184, 0.4);
+            padding: 24px 24px 28px;
+            border: 1px solid rgba(148, 163, 184, 0.7);
+            overflow: hidden;
+        }
+
+        .payment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .payment-header-main {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .payment-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 0%, #60a5fa, #2563eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.25);
+        }
+
+        .payment-logo span {
+            font-weight: 800;
+            font-size: 20px;
+            color: #ffffff;
+        }
+
+        .payment-header-text h1 {
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: 0.02em;
+        }
+
+        .payment-header-text p {
+            margin: 4px 0 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .payment-badge {
+            padding: 6px 12px;
+            font-size: 11px;
+            border-radius: 999px;
+            background: rgba(219, 234, 254, 0.95);
+            color: var(--accent-strong);
+            border: 1px solid rgba(37, 99, 235, 0.5);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .payment-badge-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: #22c55e;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+        }
+
+        .payment-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+            gap: 18px;
+        }
+
+        @media (max-width: 860px) {
+            .payment-layout {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        /* Columna izquierda: lista de métodos */
+        .card {
+            background: var(--card);
+            border-radius: 18px;
+            padding: 16px 18px 18px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .card-header h2 {
+            font-size: 15px;
+            margin: 0;
+        }
+
+        .pill-muted {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #eff6ff;
+            border: 1px solid rgba(148, 163, 184, 0.9);
+            color: var(--text-muted);
+        }
+
+        .methods-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .method-item {
+            position: relative;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: var(--card-soft);
+            border: 1px solid rgba(148, 163, 184, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .method-item.is-default {
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
+            border-color: rgba(37, 99, 235, 0.9);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+        }
+
+        .method-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: #e5f0ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .method-meta {
+            flex: 1;
+        }
+
+        .method-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .method-type {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .method-tag {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #e5edff;
+            border: 1px solid rgba(148, 163, 184, 0.8);
+            color: var(--text-muted);
+        }
+
+        .method-details {
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .method-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: flex-end;
+        }
+
+        .btn-ghost {
+            border: none;
+            background: transparent;
+            color: var(--accent-strong);
+            font-size: 11px;
+            cursor: pointer;
+            padding: 2px 0;
+        }
+
+        .btn-ghost-danger {
+            color: var(--danger);
+        }
+
+        .badge-default {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent-strong);
+            border: 1px solid rgba(37, 99, 235, 0.7);
+        }
+
+        .card-footer {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(148, 163, 184, 0.9);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: #22c55e;
+            margin-right: 6px;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+        }
+
+        .card-footer strong {
+            color: var(--text-main);
+        }
+
+        /* Columna derecha: formulario */
+        .form-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        label {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .field {
+            margin-bottom: 4px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 9px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.9);
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        input::placeholder {
+            color: rgba(148, 163, 184, 0.9);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.35);
+            background: #ffffff;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .checkbox-row input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            border-radius: 4px;
+        }
+
+        .hint {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .btn-primary {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 16px 40px rgba(37, 99, 235, 0.35);
+            margin-top: 4px;
+        }
+
+        .btn-primary span {
+            font-size: 16px;
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
+        }
+
+        .form-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+            gap: 12px;
+        }
+
+        .form-footer p {
+            margin: 0;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .form-footer strong {
+            color: var(--text-main);
+        }
+    </style>
+</head>
+
+<body>
+<div class="payment-wrapper">
+    <div class="payment-header">
+        <div class="payment-header-main">
+            <div class="payment-logo"><span>₿</span></div>
+            <div class="payment-header-text">
+                <h1>Métodos de pago</h1>
+                <p>Administra tarjetas, efectivo y otros métodos que se usarán para tus viajes.</p>
+            </div>
+        </div>
+        <div class="payment-badge">
+            <span class="payment-badge-dot"></span>
+            Wallet ScooterApp conectada
+        </div>
+    </div>
+
+    <div class="payment-layout">
+        <!-- Columna izquierda: lista de métodos -->
+        <section class="card">
+            <div class="card-header">
+                <h2>Tus métodos guardados</h2>
+                <span class="pill-muted">3 métodos activos</span>
+            </div>
+
+            <div class="methods-list">
+                <article class="method-item is-default">
+                    <div class="method-icon">💳</div>
+                    <div class="method-meta">
+                        <div class="method-label">
+                            <span class="method-type">Tarjeta de crédito</span>
+                            <span class="method-tag">Visa terminación 4928</span>
+                        </div>
+                        <div class="method-details">
+                            Expira 08/2028 · Titular: Victor David Mosqueda Zavala
+                        </div>
+                    </div>
+                    <div class="method-actions">
+                        <span class="badge-default">Predeterminado</span>
+                        <button class="btn-ghost">Editar</button>
+                    </div>
+                </article>
+
+                <article class="method-item">
+                    <div class="method-icon">🏦</div>
+                    <div class="method-meta">
+                        <div class="method-label">
+                            <span class="method-type">Transferencia / SPEI</span>
+                            <span class="method-tag">BBVA · Alias ScooterApp</span>
+                        </div>
+                        <div class="method-details">
+                            Se mostrará CLABE y referencia al confirmar el viaje.
+                        </div>
+                    </div>
+                    <div class="method-actions">
+                        <button class="btn-ghost">Hacer predeterminado</button>
+                        <button class="btn-ghost btn-ghost-danger">Eliminar</button>
+                    </div>
+                </article>
+
+                <article class="method-item">
+                    <div class="method-icon">💵</div>
+                    <div class="method-meta">
+                        <div class="method-label">
+                            <span class="method-type">Efectivo</span>
+                            <span class="method-tag">Pago al finalizar el viaje</span>
+                        </div>
+                        <div class="method-details">
+                            Sólo disponible en zonas autorizadas por ScooterApp.
+                        </div>
+                    </div>
+                    <div class="method-actions">
+                        <button class="btn-ghost">Hacer predeterminado</button>
+                        <button class="btn-ghost btn-ghost-danger">Eliminar</button>
+                    </div>
+                </article>
+            </div>
+
+            <div class="card-footer">
+                <div style="display:flex; align-items:center;">
+                    <span class="status-dot"></span>
+                    <span>
+                        <strong>Pagos seguros</strong><br>
+                        Tus datos se cifran antes de enviarse al servidor.
+                    </span>
+                </div>
+                <span>Compatible con tarjetas, SPEI, efectivo y más.</span>
+            </div>
+        </section>
+
+        <!-- Columna derecha: formulario -->
+        <section class="card">
+            <div class="card-header">
+                <h2>Agregar / editar método</h2>
+                <span class="pill-muted">Se vincula a tu cuenta actual</span>
+            </div>
+
+            <form class="form-wrapper">
+                <div class="form-row">
+                    <div class="field">
+                        <label for="metodo">Tipo de método</label>
+                        <select id="metodo" name="metodo">
+                            <option value="">Selecciona una opción</option>
+                            <option value="tarjeta_credito">Tarjeta de crédito</option>
+                            <option value="tarjeta_debito">Tarjeta de débito</option>
+                            <option value="efectivo">Efectivo</option>
+                            <option value="spei">Transferencia / SPEI</option>
+                            <option value="paypal">PayPal</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="alias">Alias para identificarlo</label>
+                        <input type="text" id="alias" name="alias" placeholder="Ej. Visa personal, BBVA empresa">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label for="numero_tarjeta">Número de tarjeta</label>
+                        <input type="text" id="numero_tarjeta" name="numero_tarjeta" maxlength="20"
+                               placeholder="XXXX XXXX XXXX XXXX">
+                    </div>
+
+                    <div class="field">
+                        <label for="cvv">CVV</label>
+                        <input type="text" id="cvv" name="cvv" maxlength="4" placeholder="3 dígitos">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label for="fecha_vencimiento">Fecha de vencimiento</label>
+                        <input type="date" id="fecha_vencimiento" name="fecha_vencimiento">
+                    </div>
+
+                    <div class="field">
+                        <label for="titular">Nombre del titular</label>
+                        <input type="text" id="titular" name="titular" placeholder="Como aparece en la tarjeta">
+                    </div>
+                </div>
+
+                <div class="checkbox-row">
+                    <input type="checkbox" id="es_predeterminado" name="es_predeterminado">
+                    <label for="es_predeterminado">Usar este método como predeterminado para mis próximos viajes</label>
+                </div>
+
+                <p class="hint">
+                    Los campos de tarjeta son opcionales si eliges métodos como efectivo, transferencia o PayPal.
+                </p>
+
+                <div class="form-footer">
+                    <p>
+                        <strong>Consejo:</strong> puedes registrar varios métodos y cambiar el predeterminado en cualquier momento.
+                    </p>
+                    <button type="submit" class="btn-primary">
+                        <span>＋</span> Guardar método
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+</body>
+</html>

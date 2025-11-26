@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Renta de Scooters – ScooterApp</title>
+
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <style>
+        :root {
+            --bg: #e0f2ff;
+            --card: #ffffff;
+            --card-soft: #f1f5f9;
+            --accent: #2563eb;
+            --accent-soft: rgba(37, 99, 235, 0.08);
+            --accent-strong: #1d4ed8;
+            --text-main: #111827;
+            --text-muted: #4b5563;
+            --border-subtle: #cbd5f5;
+            --danger: #dc2626;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top left, #bfdbfe, #ffffff);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .layout-wrapper {
+            width: 100%;
+            max-width: 1250px;
+            background: linear-gradient(135deg, #eff6ff, #ffffff);
+            border-radius: 24px;
+            box-shadow:
+                0 20px 60px rgba(15, 23, 42, 0.15),
+                0 0 0 1px rgba(148, 163, 184, 0.5);
+            padding: 22px 24px 26px;
+            border: 1px solid rgba(148, 163, 184, 0.8);
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .header-main {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 0%, #60a5fa, #2563eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.25);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 20px;
+        }
+
+        .header-text h1 {
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: 0.02em;
+        }
+
+        .header-text p {
+            margin: 4px 0 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            padding: 6px 12px;
+            font-size: 11px;
+            border-radius: 999px;
+            background: rgba(219, 234, 254, 0.95);
+            color: var(--accent-strong);
+            border: 1px solid rgba(37, 99, 235, 0.5);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: #22c55e;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+        }
+
+        /* CONTENEDORES PRINCIPALES */
+        .main-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
+            gap: 18px;
+        }
+
+        @media (max-width: 1000px) {
+            .main-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 18px;
+            padding: 14px 16px 16px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .card h2 {
+            font-size: 15px;
+            margin: 0 0 6px;
+        }
+
+        .card small {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .card + .card {
+            margin-top: 10px;
+        }
+
+        /* FORMULARIOS INICIO/FIN */
+        .form-section {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .field {
+            margin-bottom: 4px;
+        }
+
+        label {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.9);
+            background: #f9fafb;
+            color: var(--text-main);
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.35);
+            background: #ffffff;
+        }
+
+        .btn {
+            border: none;
+            padding: 9px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+            font-weight: 600;
+        }
+
+        .btn-secondary {
+            background: #e5edff;
+            color: var(--accent-strong);
+            border: 1px solid rgba(37, 99, 235, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .status-box {
+            margin-top: 8px;
+            padding: 8px 10px;
+            border-radius: 12px;
+            background: var(--card-soft);
+            border: 1px dashed rgba(148, 163, 184, 0.9);
+            font-size: 12px;
+        }
+
+        .status-box p {
+            margin: 0;
+        }
+
+        .status-label {
+            font-weight: 600;
+        }
+
+        .highlight {
+            color: var(--accent-strong);
+        }
+
+        .error-text {
+            color: var(--danger);
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        /* MAPA ADMIN */
+        .admin-card {
+            margin-top: 10px;
+        }
+
+        #admin-map {
+            width: 100%;
+            height: 420px;
+            border-radius: 14px;
+            margin-top: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.9);
+            overflow: hidden;
+        }
+
+        .admin-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 7px;
+            border-radius: 999px;
+            background: var(--card-soft);
+            border: 1px solid rgba(148, 163, 184, 0.8);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+        }
+
+        .legend-dot.disponible { background: #22c55e; }
+        .legend-dot.en-renta   { background: #eab308; }
+        .legend-dot.mantenimiento { background: #dc2626; }
+
+        .admin-info {
+            margin-top: 10px;
+            padding: 8px 10px;
+            border-radius: 12px;
+            background: var(--card-soft);
+            border: 1px dashed rgba(148, 163, 184, 0.9);
+            font-size: 12px;
+        }
+
+        .admin-info p {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+<div class="layout-wrapper">
+    <!-- ENCABEZADO -->
+    <header class="header">
+        <div class="header-main">
+            <div class="logo">S</div>
+            <div class="header-text">
+                <h1>Gestión de Renta de Scooters – Irapuato</h1>
+                <p>Lógica de inicio y fin de renta, cálculo de costo y monitoreo en mapa para administradores.</p>
+            </div>
+        </div>
+        <div class="badge">
+            <span class="badge-dot"></span>
+            Lógica de renta + Leaflet.js
+        </div>
+    </header>
+
+    <div class="main-grid">
+        <!-- COLUMNA IZQUIERDA: INICIO Y FIN DE RENTA -->
+        <section>
+            <!-- INICIO DE RENTA -->
+            <div class="card">
+                <h2>Inicio de Renta</h2>
+                <small>Selecciona un scooter disponible y comienza la renta.</small>
+
+                <div class="form-section">
+                    <div class="field">
+                        <label for="scooter-select">Scooter</label>
+                        <select id="scooter-select">
+                            <option value="">Selecciona un scooter</option>
+                            <!-- Se llena por JS -->
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="punto-inicio">Punto de inicio (referencia)</label>
+                        <input type="text" id="punto-inicio" placeholder="Ej. Centro Histórico, Plaza Cibeles">
+                    </div>
+
+                    <button id="btn-iniciar" class="btn btn-primary">
+                        ▶ Iniciar renta
+                    </button>
+
+                    <div id="inicio-error" class="error-text" style="display:none;"></div>
+
+                    <div class="status-box" id="inicio-status">
+                        <p>
+                            <span class="status-label">Estado:</span>
+                            Aún no has iniciado ninguna renta.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FIN DE RENTA Y CÁLCULO -->
+            <div class="card">
+                <h2>Fin de Renta y Cálculo</h2>
+                <small>Finaliza la renta actual y calcula el costo estimado.</small>
+
+                <div class="form-section">
+                    <div class="field">
+                        <label for="punto-fin">Punto de fin (referencia)</label>
+                        <input type="text" id="punto-fin" placeholder="Ej. Parque Irekua, Terminal de Autobuses">
+                    </div>
+
+                    <div class="field">
+                        <label for="distancia-km">Distancia recorrida (km)</label>
+                        <input type="number" id="distancia-km" min="0" step="0.1" placeholder="Ej. 3.5">
+                    </div>
+
+                    <button id="btn-finalizar" class="btn btn-secondary">
+                        ■ Finalizar renta y calcular
+                    </button>
+
+                    <div id="fin-error" class="error-text" style="display:none;"></div>
+
+                    <div class="status-box" id="fin-status">
+                        <p>
+                            <span class="status-label">Resultado:</span>
+                            Aún no se ha calculado ninguna renta.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COLUMNA DERECHA: MAPA ADMIN -->
+        <section>
+            <div class="card admin-card">
+                <h2>Mapa de Monitoreo – Administradores</h2>
+                <small>Visualiza la ubicación y estado de cada scooter en tiempo real (vista administrativa).</small>
+
+                <div id="admin-map"></div>
+
+                <div class="admin-legend">
+                    <div class="legend-item">
+                        <span class="legend-dot disponible"></span> Disponible
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot en-renta"></span> En renta
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot mantenimiento"></span> Mantenimiento
+                    </div>
+                </div>
+
+                <div class="admin-info" id="admin-info">
+                    <p>
+                        Selecciona un marcador en el mapa para ver detalles del scooter:<br>
+                        ID, estado, latitud y longitud.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    const scooters = [
+        {
+            id: 'SCO-101',
+            modelo: 'Urban Lite',
+            estado: 'disponible',
+            lat: 20.6768,
+            lng: -101.3540
+        },
+        {
+            id: 'SCO-102',
+            modelo: 'City Pro',
+            estado: 'disponible',
+            lat: 20.6545,
+            lng: -101.4010
+        },
+        {
+            id: 'SCO-103',
+            modelo: 'Campus Rider',
+            estado: 'mantenimiento',
+            lat: 20.6930,
+            lng: -101.3520
+        },
+        {
+            id: 'SCO-104',
+            modelo: 'Eco Move',
+            estado: 'disponible',
+            lat: 20.6785,
+            lng: -101.3502
+        }
+    ];
+
+    let rentaActual = null; // { scooterId, inicio, puntoInicio, lat, lng }
+
+    const scooterSelect = document.getElementById('scooter-select');
+
+    function cargarScootersSelect() {
+        scooterSelect.innerHTML = '<option value="">Selecciona un scooter</option>';
+        scooters.forEach(s => {
+            const option = document.createElement('option');
+            option.value = s.id;
+            option.textContent = `${s.id} – ${s.modelo} (${s.estado})`;
+            // Sólo mostramos como "seleccionable" los disponibles
+            if (s.estado !== 'disponible') {
+                option.disabled = true;
+            }
+            scooterSelect.appendChild(option);
+        });
+    }
+
+    cargarScootersSelect();
+
+    const btnIniciar = document.getElementById('btn-iniciar');
+    const inicioStatus = document.getElementById('inicio-status');
+    const inicioError = document.getElementById('inicio-error');
+    const puntoInicioInput = document.getElementById('punto-inicio');
+
+    btnIniciar.addEventListener('click', () => {
+        inicioError.style.display = 'none';
+        const scooterId = scooterSelect.value;
+        const puntoInicio = puntoInicioInput.value.trim();
+
+        if (!scooterId) {
+            inicioError.textContent = 'Selecciona un scooter disponible para iniciar la renta.';
+            inicioError.style.display = 'block';
+            return;
+        }
+
+        const scooter = scooters.find(s => s.id === scooterId);
+        if (!scooter || scooter.estado !== 'disponible') {
+            inicioError.textContent = 'El scooter seleccionado no está disponible.';
+            inicioError.style.display = 'block';
+            return;
+        }
+
+        const ahora = new Date();
+
+        rentaActual = {
+            scooterId,
+            inicio: ahora,
+            puntoInicio: puntoInicio || 'No especificado',
+            latInicio: scooter.lat,
+            lngInicio: scooter.lng
+        };
+        scooter.estado = 'en_renta';
+        actualizarMapaAdmin();
+        cargarScootersSelect();
+
+        inicioStatus.innerHTML = `
+            <p>
+                <span class="status-label">Estado:</span>
+                <span class="highlight">Renta en curso</span><br>
+                Scooter: <span class="highlight">${scooterId}</span><br>
+                Inicio: ${ahora.toLocaleString()}<br>
+                Punto de inicio: ${rentaActual.puntoInicio}<br>
+                Latitud: ${rentaActual.latInicio.toFixed(5)} · Longitud: ${rentaActual.lngInicio.toFixed(5)}
+            </p>
+        `;
+    });
+
+    const btnFinalizar = document.getElementById('btn-finalizar');
+    const finStatus = document.getElementById('fin-status');
+    const finError = document.getElementById('fin-error');
+    const puntoFinInput = document.getElementById('punto-fin');
+    const distanciaKmInput = document.getElementById('distancia-km');
+
+    btnFinalizar.addEventListener('click', () => {
+        finError.style.display = 'none';
+
+        if (!rentaActual) {
+            finError.textContent = 'No hay ninguna renta en curso. Primero inicia una renta.';
+            finError.style.display = 'block';
+            return;
+        }
+
+        const puntoFin = puntoFinInput.value.trim() || 'No especificado';
+        const distanciaKm = parseFloat(distanciaKmInput.value);
+
+        if (isNaN(distanciaKm) || distanciaKm <= 0) {
+            finError.textContent = 'Ingresa una distancia recorrida válida en kilómetros.';
+            finError.style.display = 'block';
+            return;
+        }
+
+        const ahora = new Date();
+        const minutos = Math.max(1, Math.round((ahora - rentaActual.inicio) / 60000)); // evitar 0
+        const costoBase = 10;
+        const costoTiempo = minutos * 1.5;
+        const costoDistancia = distanciaKm * 3;
+        const total = costoBase + costoTiempo + costoDistancia;
+
+        const scooter = scooters.find(s => s.id === rentaActual.scooterId);
+        if (scooter) {
+            scooter.estado = 'disponible'; // lo regresamos a disponible
+        }
+        actualizarMapaAdmin();
+        cargarScootersSelect();
+
+        finStatus.innerHTML = `
+            <p>
+                <span class="status-label">Resultado:</span><br>
+                Scooter: <span class="highlight">${rentaActual.scooterId}</span><br>
+                Inicio: ${rentaActual.inicio.toLocaleString()}<br>
+                Fin: ${ahora.toLocaleString()}<br>
+                Punto de inicio: ${rentaActual.puntoInicio}<br>
+                Punto de fin: ${puntoFin}<br>
+                Duración: ${minutos} min<br>
+                Distancia: ${distanciaKm.toFixed(2)} km<br><br>
+                <span class="status-label">Detalle de costo:</span><br>
+                Costo base: $${costoBase.toFixed(2)}<br>
+                Tiempo (${minutos} min x $1.50): $${costoTiempo.toFixed(2)}<br>
+                Distancia (${distanciaKm.toFixed(2)} km x $3.00): $${costoDistancia.toFixed(2)}<br><br>
+                <span class="status-label">Total a pagar:</span>
+                <span class="highlight">$${total.toFixed(2)} MXN</span>
+            </p>
+        `;
+        rentaActual = null;
+        document.getElementById('punto-inicio').value = '';
+        puntoFinInput.value = '';
+        distanciaKmInput.value = '';
+
+        inicioStatus.innerHTML = `
+            <p>
+                <span class="status-label">Estado:</span>
+                No hay renta activa.
+            </p>
+        `;
+    });
+
+    const adminMap = L.map('admin-map').setView([20.6763, -101.36], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(adminMap);
+
+    // Capas de marcadores
+    const scooterMarkers = {};
+
+    // Función para obtener estilo según estado
+    function getMarkerOptions(estado) {
+        let color = '#22c55e'; // disponible
+        if (estado === 'en_renta') color = '#eab308';
+        if (estado === 'mantenimiento') color = '#dc2626';
+
+        return {
+            radius: 9,
+            fillColor: color,
+            color: '#ffffff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+    }
+
+    const adminInfo = document.getElementById('admin-info');
+
+    function actualizarMapaAdmin() {
+        scooters.forEach(s => {
+            const position = [s.lat, s.lng];
+
+            if (!scooterMarkers[s.id]) {
+                // Crear marker
+                const marker = L.circleMarker(position, getMarkerOptions(s.estado)).addTo(adminMap);
+                marker.bindPopup(`
+                    <strong>ID:</strong> ${s.id}<br>
+                    Modelo: ${s.modelo}<br>
+                    Estado: ${s.estado}<br>
+                    Lat: ${s.lat.toFixed(5)} · Lng: ${s.lng.toFixed(5)}
+                `);
+
+                marker.on('click', () => {
+                    adminInfo.innerHTML = `
+                        <p>
+                            <span class="status-label">Scooter seleccionado:</span><br>
+                            ID: <span class="highlight">${s.id}</span><br>
+                            Modelo: ${s.modelo}<br>
+                            Estado: ${s.estado}<br>
+                            Latitud: ${s.lat.toFixed(6)}<br>
+                            Longitud: ${s.lng.toFixed(6)}
+                        </p>
+                    `;
+                });
+
+                scooterMarkers[s.id] = marker;
+            } else {
+                // Actualizar estilo / estado
+                scooterMarkers[s.id].setLatLng(position);
+                scooterMarkers[s.id].setStyle(getMarkerOptions(s.estado));
+            }
+        });
+    }
+
+    actualizarMapaAdmin();
+</script>
+</body>
+</html>

@@ -1,75 +1,211 @@
-/* Home page styles */
+/* ================== FUENTES ================== */
 @font-face {
     font-family: 'cakefont';
     src: url('../font/cakedingbats-webfont.eot');
     src: url('../font/cakedingbats-webfont.eot?#iefix') format('embedded-opentype'),
-    url('../font/cakedingbats-webfont.woff2') format('woff2'),
-    url('../font/cakedingbats-webfont.woff') format('woff'),
-    url('../font/cakedingbats-webfont.ttf') format('truetype'),
-    url('../font/cakedingbats-webfont.svg#cake_dingbatsregular') format('svg');
+         url('../font/cakedingbats-webfont.woff2') format('woff2'),
+         url('../font/cakedingbats-webfont.woff') format('woff'),
+         url('../font/cakedingbats-webfont.ttf') format('truetype'),
+         url('../font/cakedingbats-webfont.svg#cake_dingbatsregular') format('svg');
     font-weight: normal;
     font-style: normal;
 }
+
+/* ================== ESTILOS GENERALES ================== */
 body {
     padding: 60px 0;
-}
-header {
-    margin-bottom: 60px;
-}
-img {
-    margin-bottom: 30px;
-}
-h1 {
-    font-weight: bold;
-}
-ul {
-    list-style-type: none;
-    margin: 0 0 30px 0;
-    padding-left: 25px;
-}
-a {
-    color: #0071BC;
-    text-decoration: underline;
-}
-hr {
-    border-bottom: 1px solid #e7e7e7;
-    border-top: 0;
-    margin-bottom: 35px;
+    font-family: 'Helvetica Neue', sans-serif;
+    background: #f5f6fa;
+    color: #333;
 }
 
-.text-center {
+header, .header {
+    margin-bottom: 60px;
     text-align: center;
+    background: linear-gradient(90deg, #00b894, #0984e3);
+    color: white;
+    padding: 60px 20px;
+    border-radius: 12px;
 }
-.links a {
-    margin-right: 10px;
+
+.header .logo {
+    width: 120px;
+    margin-bottom: 20px;
 }
-.release-name {
-    color: #D33C43;
-    font-weight: 400;
-    font-style: italic;
-}
-.bullet:before {
-    font-family: 'cakefont', sans-serif;
-    font-size: 18px;
-    display: inline-block;
-    margin-left: -1.3em;
-    width: 1.2em;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    vertical-align: -1px;
-}
-.success:before {
-    color: #88c671;
-    content: "\0056";
-}
-.problem:before {
-    color: #d33d44;
-    content: "\0057";
-}
-.cake-error {
-    padding: 10px;
+
+.header h1 {
+    font-size: 48px;
     margin: 10px 0;
 }
-#url-rewriting-warning {
-    display: none;
+
+.header p {
+    font-size: 20px;
+    margin-bottom: 30px;
+}
+
+.btn-group {
+    margin-top: 20px;
+}
+
+.btn-group a {
+    display: inline-block;
+    padding: 12px 30px;
+    margin: 0 10px;
+    text-decoration: none;
+    color: white;
+    border-radius: 8px;
+    font-size: 18px;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background: #00b894;
+}
+.btn-primary:hover {
+    background-color: #00976c;
+}
+
+.btn-secondary {
+    background: #fd79a8;
+}
+.btn-secondary:hover {
+    background-color: #e84393;
+}
+
+/* ================== TARJETAS FEATURES ================== */
+.main {
+    padding: 60px 20px;
+}
+
+.features {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 280px;
+    margin: 15px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.card h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.card p {
+    font-size: 16px;
+    color: #555;
+}
+
+/* ================== FOOTER ================== */
+.footer {
+    background: #2d3436;
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+    border-radius: 12px 12px 0 0;
+}
+
+/* ================== PERFIL & FORMULARIOS ================== */
+.profile-container {
+    padding: 40px 20px;
+}
+
+.profile-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 600px;
+    margin: 0 auto 30px auto;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.profile-info p {
+    font-size: 18px;
+    margin: 8px 0;
+}
+
+.profile-actions a {
+    margin: 10px 10px 0 0;
+}
+
+/* Inputs y tabla de métodos de pago */
+.profile-card input[type="text"],
+.profile-card input[type="email"],
+.profile-card input[type="password"] {
+    padding: 12px;
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+/* ================== TABLAS ================== */
+.styled-table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 16px;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.styled-table thead tr {
+    background-color: #0984e3;
+    color: #ffffff;
+    text-align: left;
+    font-weight: bold;
+}
+
+.styled-table th, .styled-table td {
+    padding: 12px 15px;
+}
+
+.styled-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+    border-bottom: 2px solid #0984e3;
+}
+
+.styled-table tbody tr:hover {
+    background-color: #dfe6e9;
+}
+
+/* ================== MENSAJES ================== */
+.green {
+    color: green;
+}
+
+.red {
+    color: red;
+}
+
+/* ================== RESPONSIVE ================== */
+@media (max-width: 768px) {
+    .features {
+        flex-direction: column;
+        align-items: center;
+    }
+    .card {
+        width: 90%;
+    }
+    .btn-group a {
+        margin: 10px 5px;
+        font-size: 16px;
+        padding: 10px 20px;
+    }
 }

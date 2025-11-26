@@ -1,100 +1,67 @@
 <?php
-declare(strict_types=1);
-
 namespace App\Controller\Admin;
 
-use App\Controller\AppController;
+use App\Controller\Admin\AppController;
 
-/**
- * Promociones Controller
- *
- * @property \App\Model\Table\PromocionesTable $Promociones
- */
 class PromocionesController extends AppController
 {
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|null|void Renders view
-     */
+    
     public function index()
     {
-        $query = $this->Promociones->find();
-        $promociones = $this->paginate($query);
-
+        $promociones = $this->paginate($this->Promociones); 
+        
         $this->set(compact('promociones'));
+        $this->set('title', 'Gestión de Promociones');
     }
 
-    /**
-     * View method
-     *
-     * @param string|null $id Promocione id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $promocione = $this->Promociones->get($id, contain: []);
-        $this->set(compact('promocione'));
-    }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
-     */
+    
     public function add()
     {
-        $promocione = $this->Promociones->newEmptyEntity();
+        $promocion = $this->Promociones->newEmptyEntity();
+        
         if ($this->request->is('post')) {
-            $promocione = $this->Promociones->patchEntity($promocione, $this->request->getData());
-            if ($this->Promociones->save($promocione)) {
-                $this->Flash->success(__('The promocione has been saved.'));
-
+            $promocion = $this->Promociones->patchEntity($promocion, $this->request->getData());
+            
+            if ($this->Promociones->save($promocion)) {
+                $this->Flash->success(__('La promoción ha sido creada.'));
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The promocione could not be saved. Please, try again.'));
+            $this->Flash->error(__('La promoción no pudo ser guardada. Revisa los datos.'));
         }
-        $this->set(compact('promocione'));
+        
+        $this->set(compact('promocion'));
     }
 
-    /**
-     * Edit method
-     *
-     * @param string|null $id Promocione id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+    
     public function edit($id = null)
     {
-        $promocione = $this->Promociones->get($id, contain: []);
+        $promocion = $this->Promociones->get($id, [
+            'contain' => [],
+        ]);
+        
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $promocione = $this->Promociones->patchEntity($promocione, $this->request->getData());
-            if ($this->Promociones->save($promocione)) {
-                $this->Flash->success(__('The promocione has been saved.'));
-
+            $promocion = $this->Promociones->patchEntity($promocion, $this->request->getData());
+            
+            if ($this->Promociones->save($promocion)) {
+                $this->Flash->success(__('La promoción ha sido actualizada.'));
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The promocione could not be saved. Please, try again.'));
+            $this->Flash->error(__('La promoción no pudo ser actualizada.'));
         }
-        $this->set(compact('promocione'));
+        
+        $this->set(compact('promocion'));
     }
 
-    /**
-     * Delete method
-     *
-     * @param string|null $id Promocione id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+    
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $promocione = $this->Promociones->get($id);
-        if ($this->Promociones->delete($promocione)) {
-            $this->Flash->success(__('The promocione has been deleted.'));
+        $this->request->allowMethod(['post', 'delete']); 
+        $promocion = $this->Promociones->get($id);
+        
+        if ($this->Promociones->delete($promocion)) {
+            $this->Flash->success(__('La promoción con código {0} ha sido eliminada.', $promocion->codigo));
         } else {
-            $this->Flash->error(__('The promocione could not be deleted. Please, try again.'));
+            $this->Flash->error(__('La promoción no pudo ser eliminada.'));
         }
 
         return $this->redirect(['action' => 'index']);

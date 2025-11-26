@@ -3,7 +3,7 @@ use Cake\Routing\Route\DashedRoute;
 use Cake\Routing\RouteBuilder;
 
 return function (RouteBuilder $routes): void {
-    // Clase de ruta por defecto
+    
     $routes->setRouteClass(DashedRoute::class);
 
     // Ruta directa a login de Admin
@@ -13,16 +13,25 @@ return function (RouteBuilder $routes): void {
         'action' => 'login'
     ]);
 
+    
+    $routes->connect('/', ['controller' => 'Pages', 'action' => 'landing']);
+
     // Prefijo Admin
     $routes->prefix('Admin', function (RouteBuilder $routes) {
-        // Todas las rutas bajo /admin/* irán al prefijo Admin
         $routes->fallbacks(DashedRoute::class);
     });
 
-    // Rutas normales
+    
     $routes->scope('/', function (RouteBuilder $builder): void {
-        $builder->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
+
+        
+        $builder->connect('/profile', ['controller' => 'Users', 'action' => 'profile']);
+        $builder->connect('/profile/edit', ['controller' => 'Users', 'action' => 'editProfile']);
+        $builder->connect('/profile/password', ['controller' => 'Users', 'action' => 'changePassword']);
+
+        // Rutas por defecto de Pages/display
         $builder->connect('/pages/*', 'Pages::display');
+
         $builder->fallbacks();
     });
 };

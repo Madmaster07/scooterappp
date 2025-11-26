@@ -12,5 +12,6 @@ class AppController extends Controller
         parent::initialize();
         $this->loadComponent('Flash');
         $this->loadComponent('Authentication.Authentication');
+        $this->Authentication->addUnauthenticatedActions(['login','add','display']);
     }
 }

@@ -1,39 +1,31 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var \App\Model\Entity\User $user
+ * @var \App\Model\Entity\User $userEntity
  */
 ?>
 <div class="row">
     <aside class="column">
         <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
+            <h4 class="heading"><?= __('Acciones') ?></h4>
             <?= $this->Form->postLink(
-                __('Delete'),
-                ['action' => 'delete', $user->id],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $user->id), 'class' => 'side-nav-item']
+                __('Eliminar Perfil'),
+                ['action' => 'delete', $userEntity->id],
+                ['confirm' => __('¿Estás seguro de eliminar este perfil # {0}?', $userEntity->id), 'class' => 'side-nav-item']
             ) ?>
-            <?= $this->Html->link(__('List Users'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
+            <?= $this->Html->link(__('Lista de Usuarios'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
         </div>
     </aside>
     <div class="column column-80">
         <div class="users form content">
-            <?= $this->Form->create($user) ?>
+            <?= $this->Form->create($userEntity) ?>
             <fieldset>
-                <legend><?= __('Edit User') ?></legend>
-                <?php
-                    echo $this->Form->control('username');
-                    echo $this->Form->control('password');
-                    echo $this->Form->control('rol');
-                    echo $this->Form->control('nombre');
-                    echo $this->Form->control('apellidos');
-                    echo $this->Form->control('correo');
-                    echo $this->Form->control('telefono');
-                    echo $this->Form->control('sexo');
-                    echo $this->Form->control('fecha_de_registro', ['empty' => true]);
-                ?>
+                <legend><?= __('Editar Perfil') ?></legend>
+                <?= $this->Form->control('nombre', ['label' => 'Nombre']) ?>
+                <?= $this->Form->control('correo', ['label' => 'Correo']) ?>
+                <?= $this->Form->control('telefono', ['label' => 'Teléfono']) ?>
             </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
+            <?= $this->Form->button(__('Guardar Cambios')) ?>
             <?= $this->Form->end() ?>
         </div>
     </div>

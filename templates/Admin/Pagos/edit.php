@@ -2,36 +2,23 @@
 /**
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\Pago $pago
- * @var string[]|\Cake\Collection\CollectionInterface $viajes
  */
 ?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Form->postLink(
-                __('Delete'),
-                ['action' => 'delete', $pago->id],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $pago->id), 'class' => 'side-nav-item']
-            ) ?>
-            <?= $this->Html->link(__('List Pagos'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
+<div class="container profile-container">
+    <h1 class="text-center">Editar Método de Pago</h1>
+
+    <?= $this->Form->create($pago, ['class' => 'profile-card']) ?>
+        <fieldset>
+            <legend>Actualizar Información</legend>
+            <?= $this->Form->control('name', ['label' => 'Nombre del Titular', 'required' => true]) ?>
+            <?= $this->Form->control('card_number', ['label' => 'Número de Tarjeta', 'required' => true]) ?>
+            <?= $this->Form->control('expiry_date', ['label' => 'Fecha de Expiración', 'type' => 'date', 'required' => true]) ?>
+            <?= $this->Form->control('cvv', ['label' => 'CVV', 'required' => true]) ?>
+            <?= $this->Form->control('tipo', ['label' => 'Tipo de Pago', 'options' => ['Tarjeta' => 'Tarjeta', 'PayPal' => 'PayPal'], 'empty' => 'Seleccione', 'required' => true]) ?>
+        </fieldset>
+        <div class="profile-actions text-center">
+            <?= $this->Form->button(__('Actualizar'), ['class' => 'btn-primary']) ?>
+            <?= $this->Html->link('Cancelar', ['action' => 'index'], ['class' => 'btn-secondary']) ?>
         </div>
-    </aside>
-    <div class="column column-80">
-        <div class="pagos form content">
-            <?= $this->Form->create($pago) ?>
-            <fieldset>
-                <legend><?= __('Edit Pago') ?></legend>
-                <?php
-                    echo $this->Form->control('viaje_id', ['options' => $viajes, 'empty' => true]);
-                    echo $this->Form->control('metodo_pago_id');
-                    echo $this->Form->control('monto');
-                    echo $this->Form->control('fecha_pago', ['empty' => true]);
-                    echo $this->Form->control('estado_pago');
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
-        </div>
-    </div>
+    <?= $this->Form->end() ?>
 </div>

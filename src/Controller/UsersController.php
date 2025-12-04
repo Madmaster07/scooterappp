@@ -10,7 +10,6 @@ class UsersController extends AppController
     public function beforeFilter(\Cake\Event\EventInterface $event): void
     {
         parent::beforeFilter($event);
-        $this->Authentication->addUnauthenticatedActions(['login','add']);
     }
 
     //***********************************************************************//

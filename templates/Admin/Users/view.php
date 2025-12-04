@@ -15,7 +15,7 @@ $this->disableAutoLayout();
         </div>
         <div class="profile-actions">
             <a href="/users/edit/<?= $user->id ?>" class="btn-primary">Editar Perfil</a>
-            <a href="/viajes/historial" class="btn-secondary">Ver Historial de Viajes</a> <!-- Botón agregado -->
+            <a href="/viajes/historial" class="btn-secondary">Ver Historial de Viajes</a>
         </div>
     </div>
 

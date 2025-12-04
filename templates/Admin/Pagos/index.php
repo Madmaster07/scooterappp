@@ -5,39 +5,45 @@
  */
 ?>
 <div class="pagos index content">
-    <?= $this->Html->link(__('New Pago'), ['action' => 'add'], ['class' => 'button float-right']) ?>
-    <h3><?= __('Pagos') ?></h3>
+    <?= $this->Html->link('Agregar Pago', ['action' => 'add'], ['class' => 'btn-primary float-right']) ?>
+    <h3>Pagos</h3>
+
     <div class="table-responsive">
-        <table>
+        <table class="styled-table">
             <thead>
                 <tr>
                     <th><?= $this->Paginator->sort('id') ?></th>
-                    <th><?= $this->Paginator->sort('viaje_id') ?></th>
-                    <th><?= $this->Paginator->sort('metodo_pago_id') ?></th>
+                    <th><?= $this->Paginator->sort('viaje_id', 'Viaje') ?></th>
+                    <th><?= $this->Paginator->sort('metodo_pago_id', 'Método') ?></th>
                     <th><?= $this->Paginator->sort('monto') ?></th>
                     <th><?= $this->Paginator->sort('fecha_pago') ?></th>
                     <th><?= $this->Paginator->sort('estado_pago') ?></th>
-                    <th class="actions"><?= __('Actions') ?></th>
+                    <th class="actions">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($pagos as $pago): ?>
                 <tr>
                     <td><?= $this->Number->format($pago->id) ?></td>
-                    <td><?= $pago->hasValue('viaje') ? $this->Html->link($pago->viaje->id, ['controller' => 'Viajes', 'action' => 'view', $pago->viaje->id]) : '' ?></td>
-                    <td><?= $pago->metodo_pago_id === null ? '' : $this->Number->format($pago->metodo_pago_id) ?></td>
-                    <td><?= $pago->monto === null ? '' : $this->Number->format($pago->monto) ?></td>
+                    <td>
+                        <?= $pago->has('viaje') 
+                            ? $this->Html->link($pago->viaje->id, ['controller' => 'Viajes', 'action' => 'view', $pago->viaje->id]) 
+                            : '' 
+                        ?>
+                    </td>
+                    <td><?= $pago->has('metodo_pago') ? h($pago->metodo_pago->metodo) : '' ?></td>
+                    <td><?= $pago->monto !== null ? $this->Number->format($pago->monto) : '' ?></td>
                     <td><?= h($pago->fecha_pago) ?></td>
                     <td><?= h($pago->estado_pago) ?></td>
                     <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $pago->id]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $pago->id]) ?>
+                        <?= $this->Html->link('Ver', ['action' => 'view', $pago->id], ['class' => 'btn-secondary']) ?>
+                        <?= $this->Html->link('Editar', ['action' => 'edit', $pago->id], ['class' => 'btn-secondary']) ?>
                         <?= $this->Form->postLink(
-                            __('Delete'),
+                            'Eliminar',
                             ['action' => 'delete', $pago->id],
                             [
-                                'method' => 'delete',
-                                'confirm' => __('Are you sure you want to delete # {0}?', $pago->id),
+                                'confirm' => "¿Eliminar el pago #{$pago->id}?",
+                                'class' => 'btn-secondary'
                             ]
                         ) ?>
                     </td>
@@ -46,14 +52,15 @@
             </tbody>
         </table>
     </div>
+
     <div class="paginator">
         <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
+            <?= $this->Paginator->first('<< Primero') ?>
+            <?= $this->Paginator->prev('< Anterior') ?>
             <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
+            <?= $this->Paginator->next('Siguiente >') ?>
+            <?= $this->Paginator->last('Último >>') ?>
         </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
+        <p><?= $this->Paginator->counter('Página {{page}} de {{pages}}, mostrando {{current}} de {{count}} pagos') ?></p>
     </div>
 </div>
